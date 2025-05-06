@@ -1,6 +1,7 @@
 require("dotenv").config();
 const tmi = require("tmi.js");
 const ChannelsModule = require("./modules/ChannelsModule");
+const ShoutoutModule = require("./modules/ShoutoutModule");
 
 const client = new tmi.Client({
   identity: {
@@ -9,10 +10,10 @@ const client = new tmi.Client({
   },
   channels: [process.env.TWITCH_CHANNEL],
 });
-const channel = process.env.TWITCH_CHANNEL;
+const channel = process.env.TWITCH_CHANNEL.startsWith("#") ? process.env.TWITCH_CHANNEL : `#${process.env.TWITCH_CHANNEL}`;
 
 // Activate only desired modules here:
-const activeModuleList = [new ChannelsModule(client, channel)];
+const activeModuleList = [new ChannelsModule(client, channel), new ShoutoutModule(client, channel)];
 
 client.connect().catch(console.error);
 client.on("connected", (addr, port) => {

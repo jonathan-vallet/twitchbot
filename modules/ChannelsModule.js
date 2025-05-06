@@ -2,12 +2,19 @@
 class ChannelsModule {
   static getConfig() {
     return {
-      commandCooldown: 60 * 1000, // Time before the command can be used again by chat to avoid spam (in milliseconds)
-      autoMessageInterval: 30 * 60 * 1000, // Time between auto messages (in milliseconds)
+      commandCooldown: 1 * 1000, // Time before the command can be used again by chat to avoid spam (in milliseconds)
+      autoMessageInterval: 42 * 60 * 1000, // Time between auto messages (in milliseconds)
       messageList: [
-        "satani80Gg Follow me on Instagram for the schedule: https://instagram.com/satanimax",
-        "satani80Gg Check out the planning on Instagram: https://instagram.com/satanimax",
-        "satani80Gg Join the community and follow the schedule: https://instagram.com/satanimax",
+        `satani80Sataniheart Merci à ceux qui me suivent déjà ici et ailleurs 🙏
+          Pensez à suivre la chaîne et rejoindre l'aventure → https://linktr.ee/satanimax`,
+        `satani80Thinking Tu veux savoir quand on découvre la prochaine pépite indé ?
+          Tous les liens sont là 👉 https://linktr.ee/satanimax`,
+        `satani80Gg Le planning des lives, les jeux à venir, mes réseaux… tout est ici !  
+          Un bon moyen de ne rien rater ➡️ https://linktr.ee/satanimax`,
+        `satani80Gg Le planning des streams est sur Insta (et plus) via mon linktree !  
+         ➡️ https://linktr.ee/satanimax
+          Pense à suivre la chaîne si ce n’est pas déjà fait 😉  
+         `,
       ],
       allowedCommandList: ["reseaux", "réseaux", "reseau", "réseau"],
     };
@@ -15,7 +22,7 @@ class ChannelsModule {
 
   constructor(client, channel) {
     this.client = client;
-    this.channel = channel.startsWith("#") ? channel : `#${channel}`;
+    this.channel = channel;
 
     const config = this.constructor.getConfig();
     this.messageList = config.messageList;
