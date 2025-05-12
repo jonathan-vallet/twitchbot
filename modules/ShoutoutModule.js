@@ -101,10 +101,6 @@ class ShoutoutModule {
         Authorization: `Bearer ${process.env.APP_TOKEN}`,
       },
     });
-    console.log(`[ShoutoutModule] Fetching stream for from URL:`, url, "with headers:", {
-      "Client-ID": process.env.CLIENT_ID,
-      Authorization: `Bearer ${process.env.APP_TOKEN}`,
-    });
 
     if (!res.ok) {
       console.error("[ShoutoutModule] Twitch API error:", res.status);
