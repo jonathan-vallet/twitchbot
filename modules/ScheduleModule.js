@@ -50,7 +50,7 @@ class ScheduleModule {
         return `📅 ${formattedDate} — ${game}`;
       });
 
-      this.client.say(this.channel, "satani80Think Planning de la semaine :");
+      this.client.say(this.channel, "satani80Thinking Planning de la semaine :");
       lines.forEach((line) => {
         this.client.say(this.channel, line);
       });
@@ -63,7 +63,7 @@ class ScheduleModule {
     const res = await fetch(`https://api.twitch.tv/helix/schedule?broadcaster_id=${broadcasterId}`, {
       headers: {
         "Client-ID": process.env.CLIENT_ID,
-        Authorization: `Bearer ${process.env.APP_TOKEN}`,
+        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
       },
     });
 
@@ -95,7 +95,7 @@ class ScheduleModule {
     const res = await fetch(`https://api.twitch.tv/helix/users?login=${login}`, {
       headers: {
         "Client-ID": process.env.CLIENT_ID,
-        Authorization: `Bearer ${process.env.APP_TOKEN}`,
+        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
       },
     });
 

@@ -50,8 +50,8 @@ Copy the file named .env.dist to .env.
 
 Fill in your Twitch bot account information:
 
-ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxx
-REFRESH_TOKEN=xxxxxxxxxxxxxxxxxxxx
+BOT_ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxx
+BOT_REFRESH_TOKEN=xxxxxxxxxxxxxxxxxxxx
 CLIENT_ID=xxxxxxxxxxxxxxxxxxxx
 
 TWITCH_USERNAME=YourBotUsername
@@ -61,7 +61,16 @@ TWITCH_CHANNEL=yourchannelname
 > `chat:read` and `chat:edit`  
 > You can generate one here: [https://twitchtokengenerator.com/](https://twitchtokengenerator.com/)
 
-### 5. Start the bot
+### 5. Create a file to store the last games
+
+Create a file named `lastGames.json` in the folder `data/` (create the `data` folder if it doesn't exist).
+
+```bash
+mkdir data
+touch data/lastGames.json
+```
+
+## Start the bot
 
 In the folder where the bot is located:
 

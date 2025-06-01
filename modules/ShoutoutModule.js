@@ -62,7 +62,7 @@ class ShoutoutModule {
     }
 
     if (!this.isUserAllowedToShoutout(tags)) {
-      console.warning("[ShoutoutModule] User not allowed to shoutout");
+      console.warn("[ShoutoutModule] User not allowed to shoutout");
       return;
     }
 
@@ -72,13 +72,13 @@ class ShoutoutModule {
     const target = args[1]?.replace("@", "").toLowerCase();
 
     if (!target || target.length < 2 || target === tags.username.toLowerCase()) {
-      console.warning("[ShoutoutModule] Invalid or missing target");
+      console.warn("[ShoutoutModule] Invalid or missing target");
       return;
     }
 
     const now = Date.now();
     if (now - this.lastShoutoutTime < this.shoutoutCooldown && target === this.previouslyShoutedUser) {
-      console.warning("[ShoutoutModule] Cooldown active, shoutout ignored");
+      console.warn("[ShoutoutModule] Cooldown active, shoutout ignored");
       return;
     }
 
@@ -98,7 +98,7 @@ class ShoutoutModule {
     const res = await fetch(url, {
       headers: {
         "Client-ID": process.env.CLIENT_ID,
-        Authorization: `Bearer ${process.env.APP_TOKEN}`,
+        Authorization: `Bearer ${process.env.ACCESS_TOKEN}`,
       },
     });
 
@@ -151,7 +151,7 @@ class ShoutoutModule {
       };
       this.saveGameCache(gameCache);
     } else if (gameCache[username]) {
-      gameMessage = `Il/Elle était sur ${game} récemment. `;
+      gameMessage = `Il/Elle était sur ${gameCache[username].lastGame} récemment. `;
     }
 
     return `${shoutoutEmoji} ${shoutoutStartTemplate.replace("{username}", username)} ${gameMessage} ${shoutoutChannelEmoji} ${shoutoutChannelTemplate.replace(
