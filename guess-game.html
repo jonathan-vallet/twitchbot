@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Devine le jeu</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+      }
+      #image {
+        max-width: 100%;
+        max-height: 100vh;
+        object-fit: contain;
+        object-position: center;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <img id="image" />
+    <script>
+      const ws = new WebSocket("ws://localhost:8080"); // Port de ton serveur WebSocket
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "guess_game_start") {
+          document.getElementById("image").src = data.image;
+          document.getElementById("image").style.display = "block";
+        }
+        if (data.type === "guess_game_stop") {
+          document.getElementById("image").style.display = "none";
+        }
+      };
+    </script>
+  </body>
+</html>

@@ -1,21 +1,28 @@
 require("dotenv").config();
+const WebSocketServer = require("./websocketServer");
 const { ApiClient } = require("@twurple/api");
 const { EventSubWsListener } = require("@twurple/eventsub-ws");
 const { StaticAuthProvider } = require("@twurple/auth");
 const fs = require("fs");
-const path = require("path");
 const MastcotModule = require("./modules/MascotModule");
+const GuessGameModule = require("./modules/GuessGameModule");
 const RankingsModule = require("./modules/RankingsModule");
+const { updateVipStats } = require("./utils");
 
 class ApiServer {
   constructor(client, channel) {
     this.client = client;
+    this.wsServer = WebSocketServer.getServer();
     this.authProvider = new StaticAuthProvider(process.env.CLIENT_ID, process.env.ACCESS_TOKEN);
     this.lastGoldenFile = "C:/Users/Utilisateur/Pictures/Streaming/OBS/golden.txt";
-    this.rankingStatsFile = path.join(__dirname, "data", "rankings.json");
     this.startServer();
     this.startListener().catch(console.error);
-    this.mascotModule = new MastcotModule(client, channel);
+    this.mascotModule = new MastcotModule(client, channel, this.wsServer);
+    this.guessGameModule = new GuessGameModule(client, channel, this.wsServer);
+  }
+
+  getMascotModule() {
+    return this.mascotModule;
   }
 
   startServer() {
@@ -51,11 +58,14 @@ class ApiServer {
             console.log(`✅ ${user} a été enregistré dans le fichier ${this.lastGoldenFile}`);
           }
         });
-        this.updateGoldenStats(user);
+        updateVipStats(user);
         RankingsModule.showRankings(this.client, `#${process.env.TWITCH_CHANNEL}`, true);
         console.log(`📝 Statistiques mises à jour pour ${user}`);
       } else if (reward === "Level up Aspic") {
         this.mascotModule.incrementXp(user);
+      } else if (reward === "Devine le jeu") {
+        console.log("🔍 Un utilisateur a déclenché Devine le jeu.");
+        this.guessGameModule.onRewardRedemption(event);
       }
     });
 
@@ -65,6 +75,7 @@ class ApiServer {
 
       console.log(`✨ Nouveau follow : ${follower}`);
       this.client.say(`#${process.env.TWITCH_CHANNEL}`, `🎉 Merci pour le follow, @${follower} !`);
+      this.mascotModule.say(`Merci pour le follow, ${follower} !`);
 
       // Enregistrer dans un fichier
       const followPath = "C:/Users/Utilisateur/Pictures/Streaming/OBS/follower.txt";
@@ -92,28 +103,6 @@ class ApiServer {
       const msg = `🏁 Fin du sondage → Résultat : ${winningChoice.title} avec ${winningChoice.totalVotes} vote${winningChoice.totalVotes !== 1 ? "s" : ""}`;
       this.client.say(`#${process.env.TWITCH_CHANNEL}`, msg);
     });
-  }
-
-  updateGoldenStats(username) {
-    console.log("📝 Mise à jour des statistiques de l'As d'or...");
-    let stats = {};
-
-    // Charger les données existantes
-    if (fs.existsSync(this.rankingStatsFile)) {
-      stats = JSON.parse(fs.readFileSync(this.rankingStatsFile, "utf-8") || "{}");
-    }
-
-    // Créer l'entrée si elle n'existe pas
-    if (!stats[username]) {
-      stats[username] = { asdor: 0, aspic: 0 };
-    }
-
-    // Incrémenter le compteur
-    stats[username].asdor += 1;
-
-    // Réécrire le fichier
-    fs.writeFileSync(this.rankingStatsFile, JSON.stringify(stats, null, 2), "utf-8");
-    console.log("[Golden Stats] 📝 Stats updated");
   }
 }
 

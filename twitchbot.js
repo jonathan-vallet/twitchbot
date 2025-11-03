@@ -8,8 +8,9 @@ const ChannelsModule = require("./modules/ChannelsModule");
 const ShoutoutModule = require("./modules/ShoutoutModule");
 const ScheduleModule = require("./modules/ScheduleModule");
 const VipGameModule = require("./modules/VipGameModule");
-const MonsterTrainModule = require("./modules/MonsterTrainModule");
+// const MonsterTrainModule = require("./modules/MonsterTrainModule");
 const RankingsModule = require("./modules/RankingsModule");
+const MascotGreetingsModule = require("./modules/MascotGreetingsModule");
 
 const { scheduler } = require("timers/promises");
 
@@ -126,15 +127,17 @@ async function scheduleNextRefresh(type, result) {
 
   const channel = process.env.TWITCH_CHANNEL.startsWith("#") ? process.env.TWITCH_CHANNEL : `#${process.env.TWITCH_CHANNEL}`;
 
+  let apiServer = new ApiServer(client, channel);
+
   const activeModuleList = [
     new ChannelsModule(client, channel),
     new ShoutoutModule(client, channel),
     new ScheduleModule(client, channel),
     new VipGameModule(client, channel),
-    new MonsterTrainModule(client, channel),
+    // new MonsterTrainModule(client, channel),
     new RankingsModule(client, channel),
+    new MascotGreetingsModule(client, channel, apiServer.getMascotModule()),
   ];
-  new ApiServer(client, channel);
 
   client.connect().catch(console.error);
 

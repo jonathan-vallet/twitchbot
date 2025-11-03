@@ -30,15 +30,34 @@ class MonsterTrainModule {
       const args = msg.split(" ");
       const isHeros = args.length > 1 && args[1] === "heros";
       this.handleRoll(tags.username, isHeros);
-    }
-
-    if (msg === "!carte") {
+    } else if (msg === "!heros") {
+      const now = Date.now();
+      if (now - this.lastRollTime < this.config.rollCooldown) {
+        return; // Cooldown
+      }
+      this.lastRollTime = now;
+      this.handleRoll(tags.username, true);
+    } else if (msg === "!carte") {
       const now = Date.now();
       if (now - this.lastCarteTime < this.config.carteCooldown) {
         return; // Cooldown
       }
       this.lastCarteTime = now;
       this.handleCarte(tags.username);
+    } else if (msg === "!direction") {
+      const now = Date.now();
+      if (now - this.lastCarteTime < this.config.carteCooldown) {
+        return; // Cooldown
+      }
+      this.lastCarteTime = now;
+      this.handleDirection(tags.username);
+    } else if (msg === "!epreuve") {
+      const now = Date.now();
+      if (now - this.lastCarteTime < this.config.carteCooldown) {
+        return; // Cooldown
+      }
+      this.lastCarteTime = now;
+      this.handleEpreuve(tags.username);
     }
   }
 
@@ -80,6 +99,40 @@ class MonsterTrainModule {
     } else {
       msg = `🃏 ${username} te demande de prendre la carte ${choice === "milieu" ? "du milieu" : `de ${choice}`} !`;
     }
+
+    this.client.say(this.channel, msg);
+    console.log(`[MonsterTrainModule] ${msg}`);
+  }
+
+  handleDirection(username) {
+    // gauche, milieu, droite, et skip avec un poids plus faible
+    const options = ["gauche", "droite"];
+    const randIndex = Math.floor(Math.random() * options.length);
+    const choice = options[randIndex];
+
+    let msg = `🛤️ ${username} t'invite à emprunter le chemin de ${choice} !`;
+
+    this.client.say(this.channel, msg);
+    console.log(`[MonsterTrainModule] ${msg}`);
+  }
+
+  handleDirection(username) {
+    // gauche, milieu, droite, et skip avec un poids plus faible
+    const options = ["gauche", "droite"];
+    const randIndex = Math.floor(Math.random() * options.length);
+    const choice = options[randIndex];
+
+    let msg = `🛤️ ${username} t'invite à emprunter le chemin de ${choice} !`;
+
+    this.client.say(this.channel, msg);
+    console.log(`[MonsterTrainModule] ${msg}`);
+  }
+
+  handleEpreuve(username) {
+    // gauche, milieu, droite, et skip avec un poids plus faible
+    const isEpreuve = Math.random() < 0.5; // 50% chance d'être une épreuve
+
+    let msg = `🛤️ ${username} souhaite que ${isEpreuve ? "tu relèves le défi" : "tu n’acceptes pas l’épreuve"} !`;
 
     this.client.say(this.channel, msg);
     console.log(`[MonsterTrainModule] ${msg}`);

@@ -1,16 +1,16 @@
 const fs = require("fs");
 const path = require("path");
 const WebSocket = require("ws");
+const ApiServer = require("../apiServer");
 require("dotenv").config();
+const { updateVipStats } = require("../utils");
 
 class MascotModule {
-  constructor(client, channel) {
+  constructor(client, channel, webSocketServer) {
     this.client = client;
     this.channel = channel;
-    this.rankingsStatsFile = path.join(__dirname, "..", "data", "rankings.json");
-
-    this.webSocketServer = new WebSocket.Server({ port: 8080 });
-    this.XP_BY_LEVEL = [2, 3, 4, 5, 6, 7];
+    this.webSocketServer = webSocketServer;
+    this.XP_BY_LEVEL = [2, 2, 3, 3, 4, 5];
     this.currentXp = 0;
     this.currentLevel = 1;
     this.LEVEL_MAX = this.XP_BY_LEVEL.length;
@@ -44,9 +44,10 @@ class MascotModule {
       type: "xp_up",
       xp: this.currentXp,
     };
+    let chatMessage = `💚 ${username} a donné de l'XP à Aspic !`;
 
     // ✅ Mettre à jour les stats pour ce viewer
-    this.updateAspicStats(username);
+    updateVipStats(username);
 
     if (this.currentXp >= this.XP_BY_LEVEL[this.currentLevel - 1]) {
       ++this.currentLevel;
@@ -59,26 +60,22 @@ class MascotModule {
         level: this.currentLevel,
         nextLevelXp: this.XP_BY_LEVEL[this.currentLevel - 1] || 0,
       };
+      chatMessage = `🎉 Aspic est passé au niveau ${this.currentLevel} grâce à ${username} !`;
     }
+
+    this.client.say(this.channel, chatMessage);
 
     this.sendToClients(message);
+
+    this.say(`Merci pour l'XP, ${username} !`);
   }
 
-  updateAspicStats(username) {
-    let stats = {};
-
-    if (fs.existsSync(this.rankingsStatsFile)) {
-      stats = JSON.parse(fs.readFileSync(this.rankingsStatsFile, "utf-8") || "{}");
-    }
-
-    if (!stats[username]) {
-      stats[username] = { asdor: 0, aspic: 0 };
-    }
-
-    stats[username].aspic = (stats[username].aspic || 0) + 1;
-
-    fs.writeFileSync(this.rankingsStatsFile, JSON.stringify(stats, null, 2), "utf-8");
-    console.log(`[MascotModule] 📝 XP ajouté à ${username} dans stats.json`);
+  say(message) {
+    const sayMessage = {
+      type: "say",
+      text: message,
+    };
+    this.sendToClients(sayMessage);
   }
 
   sendToClients(message) {

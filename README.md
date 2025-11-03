@@ -79,6 +79,7 @@ In the folder where the bot is located:
 
 ```bash
 node twitchbot.js
+npx http-server . --port 8000
 ```
 
 If everything is set up correctly, you will see a message like:
